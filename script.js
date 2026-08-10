@@ -70,7 +70,7 @@ document.querySelectorAll('.modal-overlay').forEach(el => {
 // HOME SCREEN — PILIH ANGGOTA
 // ═══════════════════════════════════════════════════════════
 function renderHome() {
-  const db = window.db;
+  const db = typeof loadDB === 'function' ? loadDB() : null;
   if (!db) return; // Wait for Firebase data
 
   const mk = currentMonthKey();
@@ -113,7 +113,7 @@ function renderHome() {
 // MEMBER LOGIN — lalu diarahkan ke user/index.html
 // ═══════════════════════════════════════════════════════════
 function openMemberLogin(memberId) {
-  const db = window.db;
+  const db = loadDB();
   const member = db.members.find(m => m.id === memberId);
   if (!member) return;
 
@@ -125,7 +125,7 @@ function openMemberLogin(memberId) {
 }
 
 function loginMember() {
-  const db = window.db;
+  const db = loadDB();
   const member = db.members.find(m => m.id === currentMemberId);
   const pw = document.getElementById('member-pw-input').value;
 
@@ -144,12 +144,17 @@ function loginMember() {
 // ═══════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════
-window.onload = () => {
-  // Wait for firebase.js to set up onDBUpdate
-  if (window.onDBUpdate) {
-    window.onDBUpdate(renderHome);
-  } else {
-    // If firebase fails to load
+window.initApp = function() {
+  renderHome();
+};
+
+window.onDBUpdate = function() {
+  renderHome();
+};
+
+// Fallback jika firebase error/diblokir, load setelah 3 detik
+setTimeout(() => {
+  if (!document.getElementById('member-grid').innerHTML.trim()) {
     document.getElementById('current-month-label').textContent = 'KONEKSI DATABASE GAGAL';
   }
-};
+}, 3000);
