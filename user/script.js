@@ -385,9 +385,9 @@ VALID/TIDAK_VALID/TIDAK_JELAS
             aiVerdictStr = 'invalid';
             shortMessage = 'data tidak terpenuhi kirim foto lain';
           } else {
-            verdictHtml = `<div class="ai-verdict verdict-unclear">⚠️ Perlu Verifikasi Manual</div>`;
-            aiVerdictStr = 'unclear';
-            shortMessage = 'Gambar kurang jelas, akan diperiksa manual oleh Admin.';
+            verdictHtml = `<div class="ai-verdict verdict-invalid">❌ Bukti Tidak Valid</div>`;
+            aiVerdictStr = 'invalid';
+            shortMessage = 'data tidak terpenuhi kirim foto lain';
           }
           
           document.getElementById('ai-result-text').textContent = shortMessage;
