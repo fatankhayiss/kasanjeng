@@ -469,17 +469,18 @@ async function generateWAReminder() {
   const month = monthLabel(mk);
   const groupName = db.settings.groupName || 'Kas Bareng';
   
-  const prompt = `Buatkan pesan WhatsApp yang seru, asik, tapi tetap sopan untuk menagih uang kas ke grup ${groupName}.
+  const prompt = `Buatkan pesan WhatsApp untuk menagih uang kas ke grup ${groupName}.
 Bulan tagihan: ${month}
 Nominal per orang: ${amount}
 Daftar anak yang belum bayar: ${names}
 
-Syarat pesan:
-- Gunakan bahasa Indonesia kasual/gaul yang cocok untuk grup chat.
-- Mention nama-nama yang belum bayar di dalam teks.
-- Ingatkan untuk bayar dan jangan lupa upload bukti transfer ke web kas.
-- Berikan sedikit pantun atau candaan di awal atau akhir supaya tidak kaku.
-- Jangan berikan basa-basi pembuka seperti "Tentu, ini pesannya", langsung saja hasil teksnya.`;
+Syarat pesan WAJIB:
+- Buka chat dengan sapaan "Hai MANGKOK AYAM" atau "Halo MANGKOK AYAM" (WAJIB sebut MANGKOK AYAM).
+- Gunakan nada menyindir yang lucu dan asik, contoh getaran nadanya: "katanya mau jalan-jalan, tapi ogah bayar kas yee sempak".
+- Sebutkan nama-nama yang belum bayar dengan jelas.
+- Ingatkan mereka untuk bayar dan upload bukti ke web.
+- Jangan terlalu kaku, gunakan bahasa tongkrongan.
+- Jangan berikan basa-basi pembuka seperti "Tentu, ini pesannya", langsung berikan isi pesannya saja.`;
 
   document.getElementById('wa-reminder-content').innerHTML = `
     <div style="text-align:center; padding:30px;">
