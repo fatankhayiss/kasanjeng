@@ -24,9 +24,14 @@
     <!-- filled by JS -->
   </div>
 
-  <a class="admin-btn" href="admin/index.html" style="text-decoration:none">
-    ⚙️ Masuk sebagai Admin
-  </a>
+  <div class="flex-row" style="max-width: 620px; width: 100%; margin: 24px auto 0;">
+    <button class="btn btn-primary" onclick="openRegisterModal()" style="background: linear-gradient(135deg, #10b981, #3b82f6); flex: 2;">
+      + Daftar Kas Bareng
+    </button>
+    <a class="btn btn-ghost" href="admin/index.html" style="text-decoration:none; display: flex; align-items: center; justify-content: center; flex: 1;">
+      ⚙️ Admin
+    </a>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════════════
@@ -44,6 +49,31 @@
     <div class="flex-row">
       <button class="btn btn-ghost" onclick="closeModal('modal-member-login')">Batal</button>
       <button class="btn btn-primary" onclick="loginMember()">Masuk →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MODAL: REGISTER ANGGOTA BARU
+══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-register-member">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-register-member')">✕</button>
+    <div class="modal-title">Daftar Anggota Baru</div>
+    <div class="modal-sub">Buat profilmu untuk ikut Kas Bareng</div>
+    
+    <div class="form-group">
+      <label>Nama Lengkap / Panggilan</label>
+      <input type="text" id="reg-name-input" placeholder="Contoh: Budi Santoso" onkeydown="if(event.key==='Enter') document.getElementById('reg-pw-input').focus()">
+    </div>
+    <div class="form-group">
+      <label>Buat Password</label>
+      <input type="password" id="reg-pw-input" placeholder="Minimal 4 karakter" onkeydown="if(event.key==='Enter') registerMember()">
+    </div>
+    
+    <div class="flex-row">
+      <button class="btn btn-ghost" onclick="closeModal('modal-register-member')">Batal</button>
+      <button class="btn btn-primary" onclick="registerMember()">Daftar Sekarang 🎉</button>
     </div>
   </div>
 </div>

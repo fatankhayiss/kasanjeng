@@ -84,7 +84,7 @@ function renderHome() {
       <div class="empty-state" style="grid-column:1/-1">
         <div class="empty-state-icon">👥</div>
         <div class="empty-state-title">Belum ada anggota</div>
-        <div class="empty-state-sub">Masuk sebagai admin untuk tambah anggota</div>
+        <div class="empty-state-sub">Klik tombol Daftar Kas Bareng di bawah untuk bergabung!</div>
       </div>`;
     return;
   }
@@ -107,6 +107,50 @@ function renderHome() {
         <div class="member-status ${s.cls}">${s.label}</div>
       </button>`;
   }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// REGISTER ANGGOTA BARU
+// ═══════════════════════════════════════════════════════════
+function openRegisterModal() {
+  document.getElementById('reg-name-input').value = '';
+  document.getElementById('reg-pw-input').value = '';
+  openModal('modal-register-member');
+  setTimeout(() => document.getElementById('reg-name-input').focus(), 100);
+}
+
+function registerMember() {
+  const db = loadDB();
+  const name = document.getElementById('reg-name-input').value.trim();
+  const pw = document.getElementById('reg-pw-input').value.trim();
+
+  if (!name || !pw) {
+    showToast('Nama dan Password wajib diisi!', 'error');
+    return;
+  }
+  if (pw.length < 4) {
+    showToast('Password minimal 4 karakter!', 'error');
+    return;
+  }
+  if (db.members.some(m => m.name.toLowerCase() === name.toLowerCase())) {
+    showToast('Nama ini sudah terdaftar!', 'error');
+    return;
+  }
+
+  const newMember = {
+    id: uid(),
+    name: name,
+    password: pw,
+    color: AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)]
+  };
+
+  db.members.push(newMember);
+  if (window.saveDB) {
+    window.saveDB(db); // Firebase will sync and trigger onDBUpdate automatically
+  }
+  
+  closeModal('modal-register-member');
+  showToast('Berhasil mendaftar! Silakan login.', 'success');
 }
 
 // ═══════════════════════════════════════════════════════════
