@@ -1,40 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // DATA LAYER — localStorage
 // ═══════════════════════════════════════════════════════════
-const DB_KEY = 'kasbareng_v2';
-
-function loadDB() {
-  try {
-    const raw = localStorage.getItem(DB_KEY);
-    if (!raw) return defaultDB();
-    return JSON.parse(raw);
-  } catch { return defaultDB(); }
-}
-
-function defaultDB() {
-  return {
-    settings: {
-      groupName: 'Kas Bareng',
-      amount: 20000,
-      qrisName: '',
-      qrisImage: null,
-      adminPassword: 'admin1234',
-      geminiKey: ''
-    },
-    members: [],
-    payments: {}
-    // payments: { 'memberId_YYYY-MM': { status:'paid'|'pending'|'rejected', date, imageData, aiNote } }
-  };
-}
-
-function saveDB(db) {
-  try {
-    localStorage.setItem(DB_KEY, JSON.stringify(db));
-  } catch(e) {
-    // Storage might be full due to images
-    showToast('⚠️ Storage hampir penuh. Hapus beberapa data lama.', 'error');
-  }
-}
+// Firebase real-time data will populate window.db
 
 // ═══════════════════════════════════════════════════════════
 // HELPERS
@@ -103,7 +70,9 @@ document.querySelectorAll('.modal-overlay').forEach(el => {
 // HOME SCREEN — PILIH ANGGOTA
 // ═══════════════════════════════════════════════════════════
 function renderHome() {
-  const db = loadDB();
+  const db = window.db;
+  if (!db) return; // Wait for Firebase data
+
   const mk = currentMonthKey();
 
   document.getElementById('current-month-label').textContent = monthLabel(mk).toUpperCase();
@@ -144,7 +113,7 @@ function renderHome() {
 // MEMBER LOGIN — lalu diarahkan ke user/index.html
 // ═══════════════════════════════════════════════════════════
 function openMemberLogin(memberId) {
-  const db = loadDB();
+  const db = window.db;
   const member = db.members.find(m => m.id === memberId);
   if (!member) return;
 
@@ -156,7 +125,7 @@ function openMemberLogin(memberId) {
 }
 
 function loginMember() {
-  const db = loadDB();
+  const db = window.db;
   const member = db.members.find(m => m.id === currentMemberId);
   const pw = document.getElementById('member-pw-input').value;
 
@@ -175,4 +144,12 @@ function loginMember() {
 // ═══════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════
-renderHome();
+window.onload = () => {
+  // Wait for firebase.js to set up onDBUpdate
+  if (window.onDBUpdate) {
+    window.onDBUpdate(renderHome);
+  } else {
+    // If firebase fails to load
+    document.getElementById('current-month-label').textContent = 'KONEKSI DATABASE GAGAL';
+  }
+};
