@@ -383,7 +383,7 @@ VALID/TIDAK_VALID/TIDAK_JELAS
           } else if (verdict.includes('TIDAK_VALID')) {
             verdictHtml = `<div class="ai-verdict verdict-invalid">❌ Bukti Tidak Valid</div>`;
             aiVerdictStr = 'invalid';
-            shortMessage = 'Data tidak sesuai atau bukan bukti transfer yang sah.';
+            shortMessage = 'data tidak terpenuhi kirim foto lain';
           } else {
             verdictHtml = `<div class="ai-verdict verdict-unclear">⚠️ Perlu Verifikasi Manual</div>`;
             aiVerdictStr = 'unclear';
