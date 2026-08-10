@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kas Bareng — Anggota</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     DASHBOARD MEMBER
+══════════════════════════════════════════════ -->
+<div id="screen-member" class="screen active">
+  <nav class="dash-nav">
+    <div class="dash-nav-left">
+      <div class="nav-avatar" id="nav-avatar"></div>
+      <div>
+        <div class="nav-name" id="nav-name"></div>
+        <div class="nav-role">Anggota</div>
+      </div>
+    </div>
+    <button class="back-btn" onclick="goHome()">← Kembali</button>
+  </nav>
+
+  <div class="dash-body">
+
+    <!-- Status Bulan Ini -->
+    <div class="status-card">
+      <div class="status-card-header">
+        <div class="status-card-title">Status Kas</div>
+        <div class="current-month-tag" id="member-month-tag"></div>
+      </div>
+
+      <div id="member-payment-status" class="payment-status-big unpaid">
+        <div class="status-icon">⏳</div>
+        <div>
+          <div class="status-info-title">Belum Bayar</div>
+          <div class="status-info-sub" id="member-amount-label">Rp0</div>
+        </div>
+      </div>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="group-progress" style="width:0%"></div>
+      </div>
+      <div class="progress-label">
+        <span id="progress-label-text">0/0 anggota sudah bayar</span>
+        <span id="progress-pct">0%</span>
+      </div>
+    </div>
+
+    <!-- Upload Bukti -->
+    <div class="upload-section" id="upload-section">
+      <div class="section-title">💳 Bayar via QRIS</div>
+      <p class="section-sub">Scan QRIS di bawah, lalu upload foto bukti pembayaran</p>
+
+      <div class="qris-display">
+        <div class="qris-placeholder" id="qris-display-wrap">
+          <span style="font-size:40px">📱</span>
+          <span style="font-size:11px;color:#999">QRIS belum diatur</span>
+        </div>
+        <div class="qris-amount" id="qris-amount-display"></div>
+        <div class="qris-label" id="qris-label-name"></div>
+      </div>
+
+      <!-- Bukti Pembayaran Section -->
+      <div id="upload-section" style="margin-top:20px;">
+        <div class="upload-zone" id="upload-zone">
+          <input type="file" id="bukti-file" accept="image/*" onchange="onFileSelect(event)">
+          <div class="upload-icon">📤</div>
+          <div class="upload-title">Tap untuk upload foto bukti bayar</div>
+          <div class="upload-hint">JPG / PNG — max 10MB</div>
+        </div>
+
+        <div id="preview-section" style="display:none; margin-top:15px;">
+          <img id="bukti-preview" class="upload-preview" style="display:block; width:100%; border-radius:12px; margin-bottom:15px; max-height:240px; object-fit:contain; background:var(--surface2);" />
+          
+          <button id="btn-verify-ai" class="btn btn-secondary" style="width: 100%; background: linear-gradient(135deg, #10b981, #3b82f6); color: white; border: none; font-weight:600; padding:12px;" onclick="startAIVerification()">✨ Analisis Bukti dengan AI</button>
+
+          <div id="ai-result" class="ai-result-panel" style="display:none; margin-top:15px; background:var(--surface2); padding:16px; border-radius:12px; border:1px solid var(--border);">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+              <div class="grok-badge" style="width:auto; margin:0;">✨ Hasil Verifikasi AI Groq</div>
+            </div>
+            <div class="ai-result-text" id="ai-result-text" style="margin-bottom:10px;"></div>
+            <div id="ai-verdict"></div>
+          </div>
+
+          <button id="submit-btn" class="btn btn-primary" style="width: 100%; margin-top: 15px; display:none;" onclick="submitPayment()">Kirim Bukti Bayar</button>
+          
+          <button class="btn btn-ghost" style="width: 100%; margin-top: 10px;" onclick="cancelUpload()">Pilih Foto Lain</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Pembayaran -->
+    <div class="history-section">
+      <div class="section-title">📅 Riwayat Pembayaran</div>
+      <p class="section-sub">Rekap bulan-bulan sebelumnya</p>
+      <div class="history-list" id="member-history"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- QRIS Modal -->
+<div class="modal-overlay" id="qris-modal" onclick="closeQrisModal()">
+    <div class="modal" style="text-align: center; padding: 30px;" onclick="event.stopPropagation()">
+      <div style="font-weight: 600; margin-bottom: 20px;">Scan QRIS untuk Membayar</div>
+      <img id="qris-full-img" src="" alt="QRIS Besar" style="width: 100%; border-radius: 12px; margin-bottom: 20px;">
+      <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="downloadQris()">Simpan Gambar</button>
+      <button class="btn btn-ghost" style="width: 100%;" onclick="closeQrisModal()">Tutup</button>
+    </div>
+  </div>
+
+  <!-- Modal: Loading AI -->
+  <div class="modal-overlay" id="modal-loading-ai">
+    <div class="modal" style="text-align:center; padding:30px; max-width:300px;">
+      <div style="font-size:32px; margin-bottom:15px; animation: bounce 1s infinite;">🤖</div>
+      <div style="font-weight:600;margin-bottom:8px;">AI Sedang Bekerja</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:20px;" id="ai-progress-text">Menyiapkan gambar...</div>
+      <div style="width:100%; height:6px; background:var(--border); border-radius:3px; overflow:hidden;">
+        <div id="ai-progress-bar" style="width:0%; height:100%; background:var(--accent); transition:width 0.3s ease;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Firebase Module -->
+    <script type="module" src="../firebase.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

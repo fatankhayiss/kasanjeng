@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kas Bareng</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     HOME — PILIH ANGGOTA
+══════════════════════════════════════════════ -->
+<div id="screen-home" class="screen active">
+  <div class="home-header">
+    <div class="home-logo"><span>💰</span> Kas Bareng</div>
+    <h1 class="home-title">Pilih <span class="accent">namamu</span></h1>
+    <p class="home-sub">Cek status & bayar kas bulan ini</p>
+  </div>
+
+  <div class="month-badge" id="current-month-label">LOADING...</div>
+
+  <div class="member-grid" id="member-grid">
+    <!-- filled by JS -->
+  </div>
+
+  <a class="admin-btn" href="admin/index.html" style="text-decoration:none">
+    ⚙️ Masuk sebagai Admin
+  </a>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MODAL: LOGIN ANGGOTA
+══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-member-login">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-member-login')">✕</button>
+    <div class="modal-title" id="login-modal-name"></div>
+    <div class="modal-sub">Masukkan password kamu untuk masuk</div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="member-pw-input" placeholder="••••••" onkeydown="if(event.key==='Enter')loginMember()">
+    </div>
+    <div class="flex-row">
+      <button class="btn btn-ghost" onclick="closeModal('modal-member-login')">Batal</button>
+      <button class="btn btn-primary" onclick="loginMember()">Masuk →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

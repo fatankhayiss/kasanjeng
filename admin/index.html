@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kas Bareng — Admin</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     ADMIN DASHBOARD
+══════════════════════════════════════════════ -->
+<div id="screen-admin" class="screen active">
+  <nav class="dash-nav">
+    <div class="dash-nav-left">
+      <div class="nav-avatar" style="background: linear-gradient(135deg,#f87171,#fbbf24);">⚙️</div>
+      <div>
+        <div class="nav-name">Admin</div>
+        <div class="nav-role">Panel Kontrol</div>
+      </div>
+    </div>
+    <button class="back-btn" onclick="goHome()">← Kembali</button>
+  </nav>
+
+  <div class="admin-body">
+    <!-- Tabs -->
+    <div class="admin-tabs">
+      <button class="tab-btn active" onclick="switchTab('overview')">📊 Overview</button>
+      <button class="tab-btn" onclick="switchTab('members')">👥 Anggota</button>
+      <button class="tab-btn" onclick="switchTab('settings')">⚙️ Pengaturan</button>
+    </div>
+
+    <!-- TAB: OVERVIEW -->
+    <div id="tab-overview" class="tab-panel active">
+      <div class="stats-row" id="stats-row"></div>
+
+      <div class="status-card">
+        <div class="status-card-header">
+          <div class="status-card-title">Status Bulan Ini</div>
+          <div class="current-month-tag" id="admin-month-tag"></div>
+        </div>
+        <div id="admin-overview-list"></div>
+
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="admin-progress" style="width:0%"></div>
+        </div>
+        <div class="progress-label">
+          <span id="admin-progress-text">0/0 sudah bayar</span>
+          <span id="admin-progress-pct">0%</span>
+        </div>
+      </div>
+      
+      <div style="margin-top: 16px;">
+        <button class="btn btn-primary" style="background: linear-gradient(135deg, #22c55e, #16a34a);" onclick="openWAReminderModal()">
+          🤖 Buat Pengingat WA via AI
+        </button>
+      </div>
+    </div>
+
+    <!-- TAB: ANGGOTA -->
+    <div id="tab-members" class="tab-panel">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+        <button class="btn btn-primary btn-sm" onclick="openAddMember()">+ Tambah Anggota</button>
+      </div>
+      <div class="status-card" style="padding:0;overflow:hidden;">
+        <div class="member-table-wrap">
+          <table class="member-table">
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>Status Bulan Ini</th>
+                <th>Total Bayar</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="admin-member-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: SETTINGS -->
+    <div id="tab-settings" class="tab-panel">
+
+      <div class="settings-section">
+        <div class="settings-title">💰 Nominal Kas</div>
+        <div class="form-group">
+          <label>Jumlah Per Bulan (Rp)</label>
+          <input type="number" id="setting-amount" placeholder="Contoh: 20000" oninput="saveSetting('amount', this.value)">
+        </div>
+        <div class="form-group">
+          <label>Nama Kas / Kelompok</label>
+          <input type="text" id="setting-group-name" placeholder="Contoh: Kas Kelas 12 IPA" oninput="saveSetting('groupName', this.value)">
+        </div>
+        <div class="form-group">
+          <label>Nama Penerima QRIS</label>
+          <input type="text" id="setting-qris-name" placeholder="Contoh: Bendahara — Budi" oninput="saveSetting('qrisName', this.value)">
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">📱 Upload QRIS</div>
+        <div class="qris-upload-zone">
+          <input type="file" accept="image/*" onchange="uploadQRIS(event)">
+          <img id="qris-preview-admin" class="qris-preview-admin" alt="QRIS">
+          <div class="upload-icon">🖼️</div>
+          <div class="upload-text">Tap untuk upload gambar QRIS</div>
+          <div class="upload-hint">Akan ditampilkan ke semua anggota</div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">🔑 Password Admin</div>
+        <div class="form-group">
+          <label>Password Admin Baru</label>
+          <input type="password" id="setting-admin-pw" placeholder="Min. 4 karakter">
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="changeAdminPassword()" style="width:auto;padding:9px 18px;">Ganti Password</button>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">✨ Groq API Key</div>
+        <p class="section-sub" style="font-size:12px;margin-bottom:12px;">Dapatkan API key gratis dari <a href="https://console.groq.com/keys" target="_blank" style="color:var(--accent);">console.groq.com</a></p>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="openGroqModal()">Atur API Key</button>
+          <div id="groq-status" style="font-size:12px;color:var(--muted);"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MODALS
+══════════════════════════════════════════════ -->
+
+<!-- Modal: Login Admin (wajib login sebelum melihat dashboard) -->
+<div class="modal-overlay" id="modal-admin-login">
+  <div class="modal">
+    <button class="modal-close" onclick="goHome()">✕</button>
+    <div class="modal-title">⚙️ Login Admin</div>
+    <div class="modal-sub">Masukkan password admin untuk akses panel kontrol</div>
+    <div class="form-group">
+      <label>Password Admin</label>
+      <input type="password" id="admin-pw-input" placeholder="••••••" onkeydown="if(event.key==='Enter')loginAdmin()">
+    </div>
+    <div class="flex-row">
+      <button class="btn btn-ghost" onclick="goHome()">Batal</button>
+      <button class="btn btn-primary" onclick="loginAdmin()">Masuk →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Tambah Anggota -->
+<div class="modal-overlay" id="modal-add-member">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-add-member')">✕</button>
+    <div class="modal-title" id="add-member-modal-title">Tambah Anggota</div>
+    <div class="modal-sub" id="add-member-modal-sub">Isi data anggota baru</div>
+    <div class="form-group">
+      <label>Nama Lengkap</label>
+      <input type="text" id="new-member-name" placeholder="Nama anggota">
+    </div>
+    <div class="form-group">
+      <label>Password Anggota</label>
+      <input type="password" id="new-member-pw" placeholder="Min. 4 karakter">
+    </div>
+    <div class="form-group">
+      <label>Warna Avatar</label>
+      <select id="new-member-color">
+        <option value="linear-gradient(135deg,#6c63ff,#a78bfa)">Ungu</option>
+        <option value="linear-gradient(135deg,#22c55e,#4ade80)">Hijau</option>
+        <option value="linear-gradient(135deg,#f87171,#fb923c)">Merah-Oranye</option>
+        <option value="linear-gradient(135deg,#38bdf8,#818cf8)">Biru</option>
+        <option value="linear-gradient(135deg,#fbbf24,#f59e0b)">Kuning</option>
+        <option value="linear-gradient(135deg,#ec4899,#a78bfa)">Pink</option>
+      </select>
+    </div>
+    <input type="hidden" id="edit-member-id">
+    <div class="flex-row">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-member')">Batal</button>
+      <button class="btn btn-primary" id="save-member-btn" onclick="saveMember()">Tambah</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Verifikasi Manual Admin -->
+<div class="modal-overlay" id="modal-verify">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-verify')">✕</button>
+    <div class="modal-title" id="verify-modal-title">Verifikasi Pembayaran</div>
+    <div class="modal-sub" id="verify-modal-sub"></div>
+    <img id="verify-modal-img" style="width:100%;border-radius:10px;margin-bottom:16px;max-height:240px;object-fit:contain;background:var(--surface2);" alt="Bukti">
+    <div class="form-group" id="verify-month-group">
+      <label>Bulan</label>
+      <select id="verify-month-select"></select>
+    </div>
+    <div class="flex-row" id="verify-action-btns">
+      <button class="btn btn-danger" onclick="rejectPayment()">✕ Tolak</button>
+      <button class="btn btn-primary" onclick="approvePayment()">✓ Setujui</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Groq API Key -->
+<div class="modal-overlay" id="modal-groq-key">
+  <div class="modal" style="max-width: 400px;">
+    <button class="modal-close" onclick="closeModal('modal-groq-key')">✕</button>
+    <div class="modal-title">✨ Groq API Key</div>
+    
+    <div class="form-group" style="margin-top: 15px;">
+      <label>Masukkan API Key dari Groq</label>
+      <input type="password" id="setting-groq-key-input" placeholder="gsk_...">
+    </div>
+    <div class="flex-row" style="margin-top: 20px; justify-content: flex-end;">
+      <button class="btn btn-ghost" onclick="closeModal('modal-groq-key')">Batal</button>
+      <button class="btn btn-primary" onclick="saveGroqKey()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: WA Reminder -->
+<div class="modal-overlay" id="modal-wa-reminder">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-wa-reminder')">✕</button>
+    <div class="modal-title">🤖 AI WhatsApp Pengingat</div>
+    <div class="modal-sub">AI akan merangkai kata-kata untuk menagih kas.</div>
+    
+    <div id="wa-reminder-content">
+      <!-- Content will be injected here -->
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+    <!-- Firebase Module -->
+    <script type="module" src="../firebase.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
