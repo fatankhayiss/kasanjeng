@@ -75,6 +75,7 @@ function renderMemberDashboard(member) {
   statusEl.className = 'payment-status-big';
   const uploadSection = document.getElementById('upload-section');
   const submitBtn = document.getElementById('submit-btn');
+  const waBtn = document.getElementById('btn-wa-confirm');
 
   if (!pay || pay.status === 'rejected' || pay.status === 'unpaid') {
     statusEl.classList.add('unpaid');
@@ -83,18 +84,21 @@ function renderMemberDashboard(member) {
       <div class="status-info-sub">Tagihan: ${formatRupiah(amount)}</div></div>`;
     uploadSection.style.display = '';
     submitBtn.disabled = true;
+    if (waBtn) waBtn.style.display = 'none';
   } else if (pay.status === 'pending') {
     statusEl.classList.add('pending');
     statusEl.innerHTML = `<div class="status-icon">🔍</div>
       <div><div class="status-info-title">Menunggu Verifikasi</div>
       <div class="status-info-sub">Bukti sedang diperiksa admin</div></div>`;
     uploadSection.style.display = 'none';
+    if (waBtn) waBtn.style.display = 'block';
   } else {
     statusEl.classList.add('paid');
     statusEl.innerHTML = `<div class="status-icon">✅</div>
       <div><div class="status-info-title">Lunas!</div>
       <div class="status-info-sub">Dibayar ${pay.date}</div></div>`;
     uploadSection.style.display = 'none';
+    if (waBtn) waBtn.style.display = 'block';
   }
 
   // Group progress replaced with personalized message
@@ -461,6 +465,12 @@ function submitPayment() {
   const member = db.members.find(m => m.id === currentMemberId);
   if (member) renderMemberDashboard(member);
   pendingPaymentData = null;
+}
+
+function confirmToWA() {
+  const msg = "tan gua udah bayar kas ke web!";
+  const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
 }
 
 // ═══════════════════════════════════════════════════════════
