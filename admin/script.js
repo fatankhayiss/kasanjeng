@@ -379,6 +379,15 @@ function saveSetting(key, value) {
   }
 }
 
+function saveGeneralSettings() {
+  const db = loadDB();
+  db.settings.amount = Number(document.getElementById('setting-amount').value);
+  db.settings.groupName = document.getElementById('setting-group-name').value;
+  db.settings.qrisName = document.getElementById('setting-qris-name').value;
+  saveDB(db);
+  showToast('✅ Pengaturan berhasil disimpan!', 'success');
+}
+
 function openGroqModal() {
   const db = loadDB();
   document.getElementById('setting-groq-key-input').value = db.settings.groqKey || '';
