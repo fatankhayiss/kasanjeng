@@ -95,7 +95,10 @@ function renderAdminDashboard() {
   const paidCount = db.members.filter(m => db.payments[`${m.id}_${mk}`]?.status === 'paid').length;
   const pendingCount = db.members.filter(m => db.payments[`${m.id}_${mk}`]?.status === 'pending').length;
   const amount = db.settings.amount || 20000;
-  const allTimePaidCount = Object.values(db.payments).filter(pay => pay.status === 'paid').length;
+  let allTimePaidCount = 0;
+  db.members.forEach(m => {
+    allTimePaidCount += Object.keys(db.payments).filter(k => k.startsWith(m.id + '_') && db.payments[k].status === 'paid').length;
+  });
   const totalCollected = allTimePaidCount * amount;
 
   document.getElementById('stats-row').innerHTML = `
