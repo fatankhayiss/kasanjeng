@@ -488,7 +488,32 @@ Syarat pesan WAJIB:
       <div style="font-size:13px; color:var(--muted);">Groq sedang merangkai kata...</div>
     </div>
   `;
-  
+  let activeModel = "llama-3.3-70b-versatile";
+  try {
+    const mResp = await fetch('https://api.groq.com/openai/v1/models', { headers: { 'Authorization': `Bearer ${db.settings.groqKey}` } });
+    if (mResp.ok) {
+      const mJson = await mResp.json();
+      const availableIds = mJson.data.map(m => m.id);
+      const preferred = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "llama3-8b-8192", "mixtral-8x7b-32768", "gemma2-9b-it"];
+      
+      let found = false;
+      for (const pref of preferred) {
+        if (availableIds.includes(pref)) {
+          activeModel = pref;
+          found = true;
+          break;
+        }
+      }
+      
+      if (!found) {
+        const textModels = mJson.data.filter(m => !m.id.includes('vision') && !m.id.includes('whisper') && !m.id.includes('guard') && !m.id.includes('-vl-'));
+        if (textModels.length > 0) activeModel = textModels[0].id;
+      }
+    }
+  } catch (e) {
+    console.warn("Gagal mengambil list model Groq:", e);
+  }
+
   try {
     const resp = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
       method: 'POST',
@@ -497,7 +522,7 @@ Syarat pesan WAJIB:
         'Authorization': `Bearer ${db.settings.groqKey}`
       },
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
+        model: activeModel,
         messages: [{ role: "user", content: prompt }]
       })
     });
