@@ -61,7 +61,7 @@ function renderMemberDashboard(member) {
   const mk = currentMonthKey();
   const payKey = `${member.id}_${mk}`;
   const pay = db.payments[payKey];
-  const amount = db.settings.amount || 20000;
+  const amount = db.settings.amount || 50000;
 
   // Nav
   const av = document.getElementById('nav-avatar');
@@ -297,7 +297,7 @@ function startAIVerification() {
         // Output compressed base64
         const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
 
-        const amount = db.settings.amount || 20000;
+        const amount = db.settings.amount || 50000;
         const qrisName = db.settings.qrisName || '';
 
         const prompt = `Kamu adalah sistem verifikasi pembayaran. Analisis gambar bukti pembayaran QRIS ini.

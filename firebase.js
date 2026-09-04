@@ -15,7 +15,7 @@ const app = initializeApp(firebaseConfig);
 const dbStore = getFirestore(app);
 
 window.cachedDB = {
-  settings: { groupName: 'Kas Bareng', amount: 20000, qrisName: '', qrisImage: null, adminPassword: 'admin', groqKey: '' },
+  settings: { groupName: 'Kas Bareng', amount: 50000, qrisName: '', qrisImage: null, adminPassword: 'admin', groqKey: '' },
   members: [],
   payments: {}
 };

@@ -94,7 +94,7 @@ function renderAdminDashboard() {
   const totalMembers = db.members.length;
   const paidCount = db.members.filter(m => db.payments[`${m.id}_${mk}`]?.status === 'paid').length;
   const pendingCount = db.members.filter(m => db.payments[`${m.id}_${mk}`]?.status === 'pending').length;
-  const amount = db.settings.amount || 20000;
+  const amount = db.settings.amount || 50000;
   let allTimePaidCount = 0;
   db.members.forEach(m => {
     allTimePaidCount += Object.keys(db.payments).filter(k => k.startsWith(m.id + '_') && db.payments[k].status === 'paid').length;
@@ -469,7 +469,7 @@ async function generateWAReminder() {
   }
   
   const names = unpaidMembers.map(m => m.name).join(', ');
-  const amount = formatRupiah(db.settings.amount || 20000);
+  const amount = formatRupiah(db.settings.amount || 50000);
   const month = monthLabel(mk);
   const groupName = db.settings.groupName || 'Kas Bareng';
   
