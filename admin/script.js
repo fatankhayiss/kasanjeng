@@ -95,7 +95,8 @@ function renderAdminDashboard() {
   const paidCount = db.members.filter(m => db.payments[`${m.id}_${mk}`]?.status === 'paid').length;
   const pendingCount = db.members.filter(m => db.payments[`${m.id}_${mk}`]?.status === 'pending').length;
   const amount = db.settings.amount || 20000;
-  const totalCollected = paidCount * amount;
+  const allTimePaidCount = Object.values(db.payments).filter(pay => pay.status === 'paid').length;
+  const totalCollected = allTimePaidCount * amount;
 
   document.getElementById('stats-row').innerHTML = `
     <div class="stat-card">
