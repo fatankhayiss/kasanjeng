@@ -311,17 +311,28 @@ Jawab dalam format berikut:
 VALID/TIDAK_VALID/TIDAK_JELAS
 [Penjelasan singkat 1-2 kalimat dalam bahasa Indonesia]`;
 
-        // Fetch available models dynamically
-        let activeVisionModel = "llama-3.2-11b-vision-instruct";
+        let activeVisionModel = "llama-3.2-11b-vision-preview";
         try {
           const mResp = await fetch('https://api.groq.com/openai/v1/models', { headers: { 'Authorization': `Bearer ${groqKey}` } });
           if (mResp.ok) {
             const mJson = await mResp.json();
-            const vModel = mJson.data.find(m => m.id.includes('vision') || m.id.includes('-vl-') || m.id.includes('qwen'));
-            if (vModel) activeVisionModel = vModel.id;
+            const availableIds = mJson.data.map(m => m.id);
+            const preferredVision = ["llama-3.2-90b-vision-preview", "llama-3.2-11b-vision-preview", "qwen-vl-max"];
+            let found = false;
+            for (const pref of preferredVision) {
+              if (availableIds.includes(pref)) {
+                activeVisionModel = pref;
+                found = true;
+                break;
+              }
+            }
+            if (!found) {
+              const vModel = mJson.data.find(m => m.id.includes('vision') || m.id.includes('-vl-') || m.id.includes('qwen'));
+              if (vModel) activeVisionModel = vModel.id;
+            }
           }
         } catch (e) {
-          console.warn("Failed to fetch model list, using fallback.");
+          console.warn("Gagal mengambil list model vision Groq:", e);
         }
 
         const resp = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
